@@ -21,6 +21,13 @@ const navLink = (active) => ({
 export default function Header() {
   const navigate     = useNavigate()
   const { pathname } = useLocation()
+  const memberName = localStorage.getItem('memberName')
+
+  function handleLogout() {
+    localStorage.removeItem('memberName')
+    localStorage.removeItem('memberEmail')
+    navigate('/login')
+  }
 
   return (
     <header style={S.header}>
@@ -35,6 +42,33 @@ export default function Header() {
         >
           새 도서 등록
         </button>
+        {memberName && (
+          <>
+            <span
+              style={{
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: 600,
+              }}
+            >
+              👤 {memberName} 님
+            </span>
+
+            <button
+              onClick={handleLogout}
+              style={{
+                background: '#3aad40',
+                color: '#fff',
+                border: 'none',
+                padding: '8px 14px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              로그아웃
+            </button>
+          </>
+            )}
       </nav>
     </header>
   )
