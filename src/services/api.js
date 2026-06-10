@@ -30,13 +30,31 @@ async function request(url, options = {}) {
   return text ? JSON.parse(text) : {}
 }
 
+function getMemberName() {
+    return localStorage.getItem('memberName')
+}
+
 // ─── Books CRUD ────────────────────────────────────────────
-export const getBooks = () => request(`${BASE}/books`)
+export const getBooks = () => {
+  const memberName = getMemberName()
+
+  if (!memberName) {
+    return Promise.reject(new Error('로그인이 필요합니다.'))
+  }
+
+  return request(`${BASE}/books?memberName=${encodeURIComponent(memberName)}`)
+}
 
 export const getBook = (id) => request(`${BASE}/books/${id}`)
 
-export const createBook = (data) =>
-  request(`${BASE}/books`, {
+export const createBook = (data) => {
+  const memberName = getMemberName()
+
+  if (!memberName) {
+    throw new Error('로그인이 필요합니다.')
+  }
+
+  return request(`${BASE}/books?memberName=${encodeURIComponent(memberName)}`, {
     method: 'POST',
     body: JSON.stringify({
       favorite: false,
@@ -46,6 +64,7 @@ export const createBook = (data) =>
       ...data,
     }),
   })
+}
 
 export const updateBook = (id, data) =>
   request(`${BASE}/books/${id}`, {
@@ -61,6 +80,20 @@ export const updateBookCover = (id, coverImageUrl) =>
 
 export const deleteBook = (id) =>
   request(`${BASE}/books/${id}`, { method: 'DELETE' })
+
+// ─── Members CRUD ────────────────────────────────────────────
+export const signupMember = (data) => 
+    request(`${BASE}/members/signup`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+    })
+
+export const loginMember = (data) =>
+    request(`${BASE}/members/login`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+    })
+
 
 // ─── AI Cover Generation ────────────────────────────────────
 // Flow:
