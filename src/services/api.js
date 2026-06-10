@@ -39,11 +39,11 @@ export const createBook = (data) =>
   request(`${BASE}/books`, {
     method: 'POST',
     body: JSON.stringify({
-      ...data,
       favorite: false,
       coverImageUrl: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      ...data,
     }),
   })
 
@@ -143,7 +143,7 @@ export async function generateCover({ apiKey, model, quality, title, description
 
   // ⑤ bookId가 주어지면 json-server의 해당 도서에 coverImageUrl만 PATCH
   if (bookId) {
-    await updateBookCover(bookId, ImageSrc)
+    await updateBookCover(bookId, imageSrc)
     // await request(`${BASE}/books/${bookId}`, {
     //   method: 'PATCH',
     //   body: JSON.stringify({

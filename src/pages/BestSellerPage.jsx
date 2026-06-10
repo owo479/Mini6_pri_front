@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { createBook } from '../services/api'
 import {
   page, headerRow, titleRow, titleText, topBadge, countText, countHighlight,
   kyoboButton, searchBar, searchWrapper, searchIcon, searchInput, clearButton,
@@ -27,7 +29,7 @@ function Highlight({ text = '', query = '' }) {
 }
 
 // ── Book Card ─────────────────────────────────────────────────
-function BookCard({ book, query }) {
+function BookCard({ book, query, onAddToLibrary }) {
   const [imgErr,  setImgErr]  = useState(false)
   const [hovered, setHovered] = useState(false)
 
@@ -85,6 +87,23 @@ function BookCard({ book, query }) {
         >
           알라딘에서 보기 →
         </a>
+        <button
+            onClick={(e) => {e.stopPropagation(); onAddToLibrary(book)}}
+            style={{
+                marginTop: '6px',
+                width: '100%',
+                border: '1px solid #ff6f00',
+                background: '#fff',
+                color: '#ff6f00',
+                borderRadius: '6px',
+                padding: '7px 0',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+            }}
+        >
+            내 서재에 추가         
+        </button>
       </div>
     </div>
   )
@@ -98,6 +117,7 @@ export default function BestsellerPage() {
   const [query,   setQuery]   = useState('')
   const [sortBy,  setSortBy]  = useState('rank')
   const searchRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetch('/api/bestsellers')
@@ -118,6 +138,31 @@ export default function BestsellerPage() {
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
   }, [])
+
+
+  async function handleAddToLibrary(book) {
+    try {
+        const created = await createBook({
+            title: book.title,
+            description:
+            [
+                book.author && `저자: ${book.author}`,
+                book.publisher && `출판사: ${book.publisher}`,
+                book.price && `가격: ${book.price}`,
+                book.aladinUrl && `알라딘 링크: ${book.aladinUrl}`,
+            ]
+            .filter(Boolean)
+            .join('\n'),
+            coverImageUrl: book.cover || null,
+            favorite: false,
+        })
+
+        alert('내 서재에 추가되었습니다.')
+        navigate(`/books/${created.id}`)
+    } catch(err) {
+        alert(err.message || '내 서재 추가에 실패했습니다.')
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -221,7 +266,7 @@ export default function BestsellerPage() {
       {!loading && !error && filtered.length > 0 && (
         <div style={grid}>
           {filtered.map(book => (
-            <BookCard key={book.rank} book={book} query={query} />
+            <BookCard key={book.rank} book={book} query={query} onAddToLibrary={handleAddToLibrary} />
           ))}
         </div>
       )}
