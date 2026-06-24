@@ -52,11 +52,10 @@ export const createBook = (data) => {
 
   if (!memberName) {
     memberName="qwer";
-    // throw new Error('로그인이 필요합니다.')
+    throw new Error('로그인이 필요합니다.')
   }
 
-  // return request(`${BASE}/books?memberName=${encodeURIComponent(memberName)}`, {
-    return request(`${BASE}/books}`, {
+  return request(`${BASE}/books?memberName=${encodeURIComponent(memberName)}`, {
     method: 'POST',
     body: JSON.stringify({
       favorite: false,
