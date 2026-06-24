@@ -39,7 +39,8 @@ export const getBooks = () => {
   const memberName = getMemberName()
 
   if (!memberName) {
-    return Promise.reject(new Error('로그인이 필요합니다.'))
+    memberName="admin";
+    // return Promise.reject(new Error('로그인이 필요합니다.'))
   }
 
   return request(`${BASE}/books?memberName=${encodeURIComponent(memberName)}`)
@@ -51,8 +52,8 @@ export const createBook = (data) => {
   const memberName = getMemberName()
 
   if (!memberName) {
-    memberName="qwer";
-    throw new Error('로그인이 필요합니다.')
+    memberName="admin";
+    // throw new Error('로그인이 필요합니다.')
   }
 
   return request(`${BASE}/books?memberName=${encodeURIComponent(memberName)}`, {
