@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Installing dependencies..."
+      - npm install
+  build:
+    commands:
+      - echo "Building frontend..."
+      - npm run build
+  post_build:
+    commands:
+      - echo "Uploading to S3..."
+      - aws s3 sync dist/ s3://user50-mini6-frontend/ --delete
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id EA1SX50PHXRTT --paths "/*"
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist
