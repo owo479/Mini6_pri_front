@@ -36,7 +36,7 @@ function getMemberName() {
 
 // ─── Books CRUD ────────────────────────────────────────────
 export const getBooks = () => {
-  const memberName = getMemberName()
+  let memberName = getMemberName()
 
   if (!memberName) {
     memberName="admin";
@@ -49,7 +49,7 @@ export const getBooks = () => {
 export const getBook = (id) => request(`${BASE}/books/${id}`)
 
 export const createBook = (data) => {
-  const memberName = getMemberName()
+  let memberName = getMemberName()
 
   if (!memberName) {
     memberName="admin";
